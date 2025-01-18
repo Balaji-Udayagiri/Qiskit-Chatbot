@@ -1,0 +1,10 @@
+[
+    {
+        "task_id": "qiskitHumanEval_0",
+        "prompt": "from qiskit import QuantumCircuit\ndef create_quantum_circuit(n_qubits):\n    \"\"\" Generate a Quantum Circuit for the given int 'n_qubits' and return it.\n    \"\"\"",
+        "canonical_solution": "\n    return QuantumCircuit(n_qubits)\n",
+        "test": "def check(candidate):\n    result = candidate(3)\n    assert isinstance(result, QuantumCircuit)\n    assert result.num_qubits == 3\n",
+        "entry_point": "create_quantum_circuit",
+        "difficulty_scale": "basic"
+    }
+]
