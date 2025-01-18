@@ -1,2 +1,5 @@
+qiskit
+qiskit_ibm_runtime
+qiskit_aer
 openai
-requests
+python-dotenv

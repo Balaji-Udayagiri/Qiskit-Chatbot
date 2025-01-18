@@ -12,7 +12,7 @@ def main():
     args = parse_arguments()
 
     # Load tasks from JSON
-    tasks = load_tasks("prompts/dataset_qiskit_test_human_eval1.json")
+    tasks = load_tasks(args.task_file)
     if not tasks:
         print("No tasks found. Exiting...")
         return
@@ -32,8 +32,8 @@ def main():
 
             if args.initial:
                 # Step 1: Generate code with Ollama (only initial code)
-                initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
-                log_interaction("Ollama", task["prompt"], initial_code)
+                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
+                log_interaction("Ollama", task["prompt"], ollama_output)
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
 
                 # Step 2: Evaluate initial code
@@ -42,13 +42,13 @@ def main():
 
             elif args.refined:
                 # Step 1: Generate initial code with Ollama
-                initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
-                log_interaction("Ollama", task["prompt"], initial_code)
+                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
+                log_interaction("Ollama", task["prompt"], ollama_output)
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
 
                 # Step 2: Refine code with GPT
-                refined_code = refine_code_with_gpt(gpt, task["prompt"], initial_code)
-                log_interaction("GPT", task["prompt"], refined_code)
+                gpt_output, refined_code = refine_code_with_gpt(gpt, task["prompt"], initial_code)
+                log_interaction("GPT", task["prompt"], gpt_output)
                 refined_file_path = save_generated_code(task_id, "refined_code", refined_code)
 
                 # Step 3: Evaluate refined code
@@ -58,16 +58,16 @@ def main():
             else:
                 # If neither flag is set, evaluate both codes
                 print(f"Evaluating both codes for task {task_id}...")
-                initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
-                log_interaction("Ollama", task["prompt"], initial_code)
+                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
+                log_interaction("Ollama", task["prompt"], ollama_output)
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
 
                 # Evaluate initial code
                 evaluate_and_log(task_id, initial_file_path, task["difficulty_scale"], task["test"], csv_writer)
 
                 # Refine code with GPT
-                refined_code = refine_code_with_gpt(gpt, task["prompt"], initial_code)
-                log_interaction("GPT", task["prompt"], refined_code)
+                gpt_output, refined_code = refine_code_with_gpt(gpt, task["prompt"], initial_code)
+                log_interaction("GPT", task["prompt"], gpt_output)
                 refined_file_path = save_generated_code(task_id, "refined_code", refined_code)
 
                 # Evaluate refined code

@@ -6,8 +6,8 @@ from processing.process_LLM_output import process_LLM_output
 
 def generate_code_with_llm(model, prompt):
     print(f"Generating code with {model}...")
-    generated_code = model.generate_code(prompt)
-    return process_LLM_output(generated_code, prompt)
+    llm_output = model.generate_code(prompt)
+    return process_LLM_output(llm_output, prompt)
 
 def refine_code_with_gpt(gpt_model, prompt, initial_code):
     print("Refining code with GPT...")

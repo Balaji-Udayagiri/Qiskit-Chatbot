@@ -84,19 +84,19 @@ def normalize_code(code_str):
     normalized_code = unicodedata.normalize('NFKD', code_str).encode('ascii', 'ignore').decode('ascii')
     return normalized_code
 
-def extract_code(gpt_response):
+def extract_code(llm_response):
     """
     Extract the Python code from GPT response by looking for triple backticks.
     """
-    if "```" in gpt_response:
-        code_blocks = gpt_response.split("```")
+    if "```" in llm_response:
+        code_blocks = llm_response.split("```")
         for block in code_blocks:
             if block.strip().startswith("python") or block.strip().startswith("from") or block.strip().startswith("def"):
                 return block.strip().lstrip("python").strip()
-    return gpt_response  # Fallback: return the full response if no delimiters are found
+    return llm_response  # Fallback: return the full response if no delimiters are found
 
-def process_LLM_output(code, prompt):
-    extracted_code = extract_code(code)
+def process_LLM_output(llm_output, prompt):
+    extracted_code = extract_code(llm_output)
     print(f"Extracted Code:\n{extracted_code}\n")
 
     # Combine imports from the prompt and normalize code
@@ -106,4 +106,4 @@ def process_LLM_output(code, prompt):
 
 
     print(f"Complete Code with Imports and Normalized:\n{complete_code}\n")
-    return complete_code
+    return llm_output, complete_code
