@@ -47,12 +47,12 @@ def sanitize_task_id(task_id):
     return task_id.replace("/", "_")
 
 
-def save_generated_code(task_id, code_str):
+def save_generated_code(task_id, loc, code_str):
     """
     Save normalized Python code into a Python file.
     """
     sanitized_task_id = sanitize_task_id(task_id)
-    file_name = f"outputs/generated_code_{sanitized_task_id}.py"
+    file_name = f"outputs/{loc}/generated_code_{sanitized_task_id}.py"
     normalized_code = normalize_code(code_str)  # Normalize the code before saving
     with open(file_name, 'w', encoding='utf-8') as f:
         f.write(normalized_code)

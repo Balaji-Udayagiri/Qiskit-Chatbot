@@ -1,5 +1,4 @@
 from openai import OpenAI
-
 from dotenv import load_dotenv
 import os
 
@@ -13,7 +12,7 @@ class LLM_GPT:
         client (OpenAI): The OpenAI client instance for interacting with the API.
     """
 
-    def __init__(self, model: str = "gpt-4", api_key: str = ""):
+    def __init__(self, model: str = "gpt-4"):
         """
         Initialize the LLM_GPT class.
 

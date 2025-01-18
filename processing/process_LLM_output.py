@@ -95,7 +95,7 @@ def extract_code(gpt_response):
                 return block.strip().lstrip("python").strip()
     return gpt_response  # Fallback: return the full response if no delimiters are found
 
-def process_ollama_output(code, prompt):
+def process_LLM_output(code, prompt):
     extracted_code = extract_code(code)
     print(f"Extracted Code:\n{extracted_code}\n")
 
