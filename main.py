@@ -29,11 +29,15 @@ def main():
         for task in tasks:
             task_id = task["task_id"]
             print(f"Processing task {task_id}...")
+            ollama_prompt = "Give the entire code for the following task containing the library imports and function definition and body:\n" + task["prompt"]
 
             if args.initial:
                 # Step 1: Generate code with Ollama (only initial code)
-                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
-                log_interaction("Ollama", task["prompt"], ollama_output)
+                
+                #ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
+                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, ollama_prompt)
+
+                log_interaction("Ollama", task["task_id"], ollama_prompt, ollama_output)
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
 
                 # Step 2: Evaluate initial code
@@ -42,8 +46,8 @@ def main():
 
             elif args.refined:
                 # Step 1: Generate initial code with Ollama
-                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
-                log_interaction("Ollama", task["prompt"], ollama_output)
+                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, ollama_prompt)
+                log_interaction("Ollama", ollama_prompt, ollama_output)
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
 
                 # Step 2: Refine code with GPT
@@ -58,7 +62,7 @@ def main():
             else:
                 # If neither flag is set, evaluate both codes
                 print(f"Evaluating both codes for task {task_id}...")
-                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, task["prompt"])
+                ollama_output, initial_code = generate_code_with_llm(qiskit_code_assistant, ollama_prompt)
                 log_interaction("Ollama", task["prompt"], ollama_output)
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
 

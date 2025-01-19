@@ -1,6 +1,7 @@
 import subprocess
 import os
 import ast
+from utils.file_manager import sanitize_task_id
 
 
 def extract_function_name(file_path: str) -> str:
@@ -35,7 +36,7 @@ def evaluate_code(task_id: str, refined_file_path: str, test_code: str) -> tuple
     Returns:
         tuple: A tuple containing the result ("PASS" or "FAIL") and an error message (if any).
     """
-    temp_eval_file = f"outputs/{task_id}_eval.py"
+    temp_eval_file = f"outputs/{sanitize_task_id(task_id)}_eval.py"
     try:
         # Extract the function name from the refined code
         function_name = extract_function_name(refined_file_path)
