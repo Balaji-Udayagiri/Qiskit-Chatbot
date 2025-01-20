@@ -13,4 +13,4 @@ __pycache__/
 *.logs/
 
 # Ignore virtual environments
-venv/
+*qpy

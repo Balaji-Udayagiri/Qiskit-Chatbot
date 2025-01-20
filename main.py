@@ -4,6 +4,7 @@ from llms.llm_gpt import LLM_GPT
 from utils.json_handler import load_tasks
 from utils.evaluator import evaluate_and_log
 from utils.file_manager import save_generated_code
+from utils.file_manager import sanitize_task_id
 from args_parser import parse_arguments
 
 def main():
@@ -28,12 +29,14 @@ def main():
         for task in tasks:
             task_id = task["task_id"]
             print(f"Processing task {task_id}...")
-            ollama_prompt = "Give the entire code for the following task containing the library imports and function definition and body:\n" + task["prompt"]
 
             if args.initial:
-                # Step 1: Generate code with Ollama (only initial code)
+                # Step 1: Generate code with Ollama (only initial code) (comment out if you want to only evaluate on generated results)
                 initial_code = qiskit_code_assistant.generate_and_log_code(task["prompt"], task_id)
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
+                
+                #uncomment if you want to evaluate on generated results
+                #initial_file_path = f"outputs/initial_code/generated_code_{sanitize_task_id(task_id)}.py"
 
                 # Step 2: Evaluate initial code
                 print(f"Evaluating initial code for task {task_id}...")
