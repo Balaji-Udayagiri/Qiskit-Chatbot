@@ -1,6 +1,8 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
+from processing.process_LLM_output import process_LLM_output
+from utils.logger import log_interaction
 
 
 class LLM_GPT:
@@ -23,6 +25,10 @@ class LLM_GPT:
         load_dotenv()
         self.model = model
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # Initialize the OpenAI client with the provided API key
+
+    def __modify_prompt__(self, prompt, initial_code):
+        ollama_prompt = f"From the prompt:\n\n{prompt}\n\nI wrote:\n\n{initial_code}\n\nFix any errors, complete the code with imports, and wrap the function in triple backticks for clarity."
+        return ollama_prompt
 
     def generate_code(self, prompts):
         """
@@ -48,3 +54,10 @@ class LLM_GPT:
             except Exception as e:
                 responses.append(f"Error: {e}")
         return responses
+
+    def generate_and_log_code(self, prompt, task_id, initial_code):
+        ollama_prompt = self.__modify_prompt__(prompt, initial_code)
+        llm_output = self.generate_code(ollama_prompt)[0]
+        code = process_LLM_output(llm_output, prompt)
+        log_interaction("Ollama", task_id, ollama_prompt, llm_output)
+        return code

@@ -1,8 +1,14 @@
 import subprocess
+from processing.process_LLM_output import process_LLM_output
+from utils.logger import log_interaction
 
 class LLM_Ollama:
     def __init__(self, model: str = "your_ollama_model"):
         self.model = model
+
+    def __modify_prompt__(self, prompt):
+        ollama_prompt = "Give the entire code for the following task containing the library imports and function definition and body:\n" + prompt
+        return ollama_prompt
 
     def generate_code(self, prompt):
         """
@@ -13,13 +19,15 @@ class LLM_Ollama:
         
         Returns:
             str or list of str: The generated output for a single prompt or a list of outputs for multiple prompts.
+            str: The extracted code from the generated.
         """
+        
         try:
             if isinstance(prompt, str):
                 # Handle single prompt
                 command = ["ollama", "run", self.model, prompt]
                 result = subprocess.run(command, capture_output=True, text=True, check=True)
-
+                
                 if result.returncode == 0:
                     return result.stdout.strip()
                 else:
@@ -44,3 +52,11 @@ class LLM_Ollama:
         except Exception as e:
             print(f"Exception while running model {self.model}: {str(e)}")
             return None
+        
+    
+    def generate_and_log_code(self, prompt, task_id):
+        ollama_prompt = self.__modify_prompt__(prompt)
+        llm_output = self.generate_code(ollama_prompt)
+        code = process_LLM_output(llm_output, prompt)
+        log_interaction("Ollama", task_id, ollama_prompt, llm_output)
+        return code

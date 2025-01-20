@@ -106,4 +106,4 @@ def process_LLM_output(llm_output, prompt):
 
 
     print(f"Complete Code with Imports and Normalized:\n{complete_code}\n")
-    return llm_output, complete_code
+    return complete_code
