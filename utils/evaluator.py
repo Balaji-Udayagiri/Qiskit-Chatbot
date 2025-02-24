@@ -1,6 +1,7 @@
 import subprocess
 import os
 import ast
+from utils.file_manager import sanitize_task_id
 
 
 def extract_function_name(file_path: str) -> str:
@@ -35,7 +36,7 @@ def evaluate_code(task_id: str, refined_file_path: str, test_code: str) -> tuple
     Returns:
         tuple: A tuple containing the result ("PASS" or "FAIL") and an error message (if any).
     """
-    temp_eval_file = f"outputs/{task_id}_eval.py"
+    temp_eval_file = f"outputs/{sanitize_task_id(task_id)}_eval.py"
     try:
         # Extract the function name from the refined code
         function_name = extract_function_name(refined_file_path)
@@ -67,3 +68,13 @@ def evaluate_code(task_id: str, refined_file_path: str, test_code: str) -> tuple
         # Clean up the temporary evaluation file
         if os.path.exists(temp_eval_file):
             os.remove(temp_eval_file)
+
+def evaluate_and_log(task_id, refined_file_path, difficulty_scale, test_code, csv_writer):
+    print(f"Task {task_id}: Evaluating refined code...")
+    try:
+        result, error_message = evaluate_code(task_id, refined_file_path, test_code)
+        print(f"Task {task_id}: {result}")
+    except Exception as e:
+        result = "FAIL"
+        error_message = str(e)
+    csv_writer.writerow([task_id, difficulty_scale, result, error_message])
