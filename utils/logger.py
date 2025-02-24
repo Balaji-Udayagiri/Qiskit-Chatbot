@@ -19,7 +19,7 @@ def log_interaction(llm: str, task_id:str, prompt: str, response: str):
     #logs_subdir = f".logs_{timestamp}"
     log_file = f"{log_dir}{llm}_log_{sanitize_task_id(task_id)}.txt"
     
-    with open(log_file, "w") as f:
+    with open(log_file, "w", encoding="utf-8") as f:
         f.write(f"Timestamp: {timestamp}\n")
         f.write(f"LLM: {llm}\n")
         f.write(f"Prompt:\n{prompt}\n")

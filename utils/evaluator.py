@@ -69,12 +69,12 @@ def evaluate_code(task_id: str, refined_file_path: str, test_code: str) -> tuple
         if os.path.exists(temp_eval_file):
             os.remove(temp_eval_file)
 
-def evaluate_and_log(task_id, refined_file_path, difficulty_scale, test_code, csv_writer):
-    print(f"Task {task_id}: Evaluating refined code...")
+def evaluate_and_log(task_id, refined_file_path, difficulty_scale, test_code, csv_writer, code_type):
+    print(f"Task {task_id}: Evaluating {code_type} code...")
     try:
         result, error_message = evaluate_code(task_id, refined_file_path, test_code)
         print(f"Task {task_id}: {result}")
     except Exception as e:
         result = "FAIL"
         error_message = str(e)
-    csv_writer.writerow([task_id, difficulty_scale, result, error_message])
+    csv_writer.writerow([task_id, difficulty_scale, result, error_message, code_type])

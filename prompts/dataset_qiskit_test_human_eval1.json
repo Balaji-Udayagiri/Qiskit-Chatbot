@@ -1,10 +1,10 @@
 [
     {
-        "task_id": "qiskitHumanEval_0",
-        "prompt": "from qiskit import QuantumCircuit\ndef create_quantum_circuit(n_qubits):\n    \"\"\" Generate a Quantum Circuit for the given int 'n_qubits' and return it.\n    \"\"\"",
-        "canonical_solution": "\n    return QuantumCircuit(n_qubits)\n",
-        "test": "def check(candidate):\n    result = candidate(3)\n    assert isinstance(result, QuantumCircuit)\n    assert result.num_qubits == 3\n",
-        "entry_point": "create_quantum_circuit",
+        "task_id": "qiskitHumanEval/1",
+        "prompt": "from qiskit import QuantumCircuit\nfrom qiskit_aer import AerSimulator\nfrom qiskit_ibm_runtime import Sampler\nfrom qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager\ndef run_bell_state_simulator():\n    \"\"\" Define a phi plus bell state using Qiskit, transpile the circuit using pass manager with optimization level as 1, run it using Qiskit Sampler with the Aer simulator as backend and return the counts dictionary.\n    \"\"\"",
+        "canonical_solution": "\n    bell = QuantumCircuit(2)\n    bell.h(0)\n    bell.cx(0, 1)\n    bell.measure_all()\n    backend = AerSimulator()\n    pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)\n    isa_circuit = pass_manager.run(bell)\n    sampler = Sampler(mode=backend)\n    result = sampler.run([isa_circuit], shots=1000).result()\n    return result[0].data.meas.get_counts()\n",
+        "test": "def check(candidate):\n    result = candidate()\n    assert isinstance(result, dict)\n    assert result.keys() == {\"00\", \"11\"}\n    assert 0.4 < (result[\"00\"] / sum(result.values())) < 0.6\n",
+        "entry_point": "run_bell_state_simulator",
         "difficulty_scale": "basic"
     }
 ]

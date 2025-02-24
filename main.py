@@ -1,6 +1,6 @@
 import csv
 from llms.llm_ollama import LLM_Ollama
-from llms.llm_gpt import LLM_GPT
+from llms.llm_deepseek import LLM_GPT
 from utils.json_handler import load_tasks
 from utils.evaluator import evaluate_and_log
 from utils.file_manager import save_generated_code
@@ -24,7 +24,7 @@ def main():
     output_csv = "outputs/evaluation_results.csv"
     with open(output_csv, "w", newline="") as csvfile:
         csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(["task_id", "difficulty_Scale", "result", "error_message"])
+        csv_writer.writerow(["task_id", "difficulty_Scale", "result", "error_message", "code_type"])
 
         for task in tasks:
             task_id = task["task_id"]
@@ -40,7 +40,7 @@ def main():
 
                 # Step 2: Evaluate initial code
                 print(f"Evaluating initial code for task {task_id}...")
-                evaluate_and_log(task_id, initial_file_path, task["difficulty_scale"], task["test"], csv_writer)
+                evaluate_and_log(task_id, initial_file_path, task["difficulty_scale"], task["test"], "initial", csv_writer)
 
             elif args.refined:
                 # Step 1: Generate initial code with Ollama
@@ -53,7 +53,7 @@ def main():
 
                 # Step 3: Evaluate refined code
                 print(f"Evaluating refined code for task {task_id}...")
-                evaluate_and_log(task_id, refined_file_path, task["difficulty_scale"], task["test"], csv_writer)
+                evaluate_and_log(task_id, refined_file_path, task["difficulty_scale"], task["test"], "refined", csv_writer)
 
             else:
                 # If neither flag is set, evaluate both codes
@@ -61,7 +61,7 @@ def main():
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
 
                 # Evaluate initial code
-                evaluate_and_log(task_id, initial_file_path, task["difficulty_scale"], task["test"], csv_writer)
+                evaluate_and_log(task_id, initial_file_path, task["difficulty_scale"], task["test"], "initial", csv_writer)
 
                 # Refine code with GPT
                 refined_code = gpt.generate_and_log_code(task["prompt"], task_id, initial_code)
@@ -69,7 +69,7 @@ def main():
                 refined_file_path = save_generated_code(task_id, "refined_code", refined_code)
 
                 # Evaluate refined code
-                evaluate_and_log(task_id, refined_file_path, task["difficulty_scale"], task["test"], csv_writer)
+                evaluate_and_log(task_id, refined_file_path, task["difficulty_scale"], task["test"], "refined", csv_writer)
 
             print(f"Task {task_id} complete. Outputs saved to 'outputs/'.")
 

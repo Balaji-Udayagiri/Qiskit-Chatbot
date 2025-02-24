@@ -20,7 +20,7 @@ This project uses two LLMs— An Ollama model and GPT—to collaboratively gener
 
 `--task_file` (required): Path to the JSON file containing the prompts. Each prompt should be an object with a task_id and prompt field.
 
-`--ollama_model` (optional): The model to use for Ollama code generation. If not specified, the default model hf.co/Qiskit/granite-8b-qiskit-GGUF:latest will be used.
+`--ollama_model` (optional): The model to use for Ollama code generation. If not specified, the default model `hf.co/Qiskit/granite-8b-qiskit-GGUF:latest` will be used.
 
 `--gpt_model` (optional): The model to use for GPT code refinement. If not specified, the default model o1-preview will be used.
 
