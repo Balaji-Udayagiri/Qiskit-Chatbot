@@ -1,14 +1,15 @@
-import subprocess
+from transformers import pipeline
 from processing.process_LLM_output import process_LLM_output
 from utils.logger import log_interaction
 
-class LLM_Ollama:
+class LLM_Transformers:
     def __init__(self, model: str = "your_ollama_model"):
         self.model = model
+        self.pipe = pipeline("text-generation", model=self.model)
 
     def __modify_prompt__(self, prompt):
-        ollama_prompt = "Give the entire code for the following task containing the library imports and function definition and body:\n" + prompt
-        return ollama_prompt
+        transformer_prompt = "Give the entire code for the following task containing the library imports and function definition and body:\n" + prompt
+        return transformer_prompt
 
     def generate_code(self, prompt):
         """
@@ -21,42 +22,22 @@ class LLM_Ollama:
             str or list of str: The generated output for a single prompt or a list of outputs for multiple prompts.
             str: The extracted code from the generated.
         """
-        
+        print("in generate code")
         try:
-            if isinstance(prompt, str):
-                # Handle single prompt
-                command = ["ollama", "run", self.model, prompt]
-                result = subprocess.run(command, capture_output=True, text=True, check=True)
-                
-                if result.returncode == 0:
-                    return result.stdout.strip()
-                else:
-                    print(f"Error running model {self.model}: {result.stderr}")
-                    return None
+            result = self.pipe(prompt, max_length=512)
+            output = result[0]['generated_text']
+            return output
 
-            elif isinstance(prompt, list):
-                # Handle list of prompts
-                outputs = []
-                for single_prompt in prompt:
-                    command = ["ollama", "run", self.model, single_prompt]
-                    result = subprocess.run(command, capture_output=True, text=True, check=True)
-
-                    if result.returncode == 0:
-                        outputs.append(result.stdout.strip())
-                    else:
-                        print(f"Error running model {self.model} for prompt '{single_prompt}': {result.stderr}")
-                        outputs.append(None)  # Append None for failed prompts
-                return outputs
-            else:
-                raise ValueError("Prompt must be either a string or a list of strings.")
         except Exception as e:
             print(f"Exception while running model {self.model}: {str(e)}")
             return None
         
     
     def generate_and_log_code(self, prompt, task_id):
-        ollama_prompt = self.__modify_prompt__(prompt)
-        llm_output = self.generate_code(ollama_prompt)
+        print("in generate and log code")
+        modified_prompt = self.__modify_prompt__(prompt)
+        llm_output = self.generate_code(modified_prompt)
+        print("llm output = ", llm_output)
         code = process_LLM_output(llm_output, prompt)
-        log_interaction("Ollama", task_id, ollama_prompt, llm_output)
+        log_interaction("Transformers", task_id, modified_prompt, llm_output)
         return code
