@@ -1,5 +1,5 @@
 import csv
-from llms.llm_ollama import LLM_Ollama
+from llms.llm_qiskit import LLM_Transformers
 from llms.llm_deepseek import LLM_GPT
 from utils.json_handler import load_tasks
 from utils.evaluator import evaluate_and_log
@@ -18,7 +18,8 @@ def main():
         return
 
     # Initialize LLMs
-    qiskit_code_assistant = LLM_Ollama(model=args.ollama_model)
+    qiskit_code_assistant = LLM_Transformers(model=args.transformers_model)
+    print("after qiskit_code_assistant")
     gpt = LLM_GPT(model=args.gpt_model)
 
     output_csv = "outputs/evaluation_results.csv"
@@ -31,6 +32,7 @@ def main():
             print(f"Processing task {task_id}...")
 
             if args.initial:
+                print("In args.initial")
                 # Step 1: Generate code with Ollama (only initial code) (comment out if you want to only evaluate on generated results)
                 initial_code = qiskit_code_assistant.generate_and_log_code(task["prompt"], task_id)
                 initial_file_path = save_generated_code(task_id, "initial_code", initial_code)
